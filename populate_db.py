@@ -1,5 +1,6 @@
-import requests
 import logging
+
+import requests
 
 from graphql_api.config import country_data_api_url
 from graphql_api.models import Country, Currency
@@ -14,6 +15,10 @@ def fetch_from_api() -> list:
 
 
 def populate_database():
+    if Country.objects.first() is not None:
+        # if the database is already populated no need to populate it again
+        print(Country.objects.first().to_json())
+        return
     country_raw_data = fetch_from_api()
     logging.info("Collected data from API successfully")
     country_instances = []
@@ -28,20 +33,23 @@ def populate_database():
         country.subregion = country_data.get('subregion')
         latlong = country_data.get('latlng')
         # coordinate should be pushed in order longitude, latitude
-        country.coordinates = {"type": "Point", "coordinates": [latlong[1], latlong[0]]}
+        country.location = {
+            "type": "Point",
+            "coordinates": [latlong[1], latlong[0]]
+        }
         # country.coordinates = {"lat": lat_long[0], "long": lat_long[1]}
         languages = country_data.get('languages')
         if languages:
-            languages_processed = {}
-            for short_name, name in languages.items():
-                languages_processed[short_name] = name
-            country.languages = languages_processed
+            country.languages = list(languages.values())
         currency_raw = country_data.get('currencies')
         if currency_raw:
             currencies = []
             for short_name, details in currency_raw.items():
-                currency = Currency(short_name=short_name, name=details['name'], symbol=details.get('symbol'))
-                # currencies.append({"short": short_name, "name": details['name'], 'symbol': details['symbol']})
+                currency = Currency(
+                    short_name=short_name,
+                    name=details['name'],
+                    symbol=details.get('symbol')
+                )
                 currencies.append(currency)
             country.currencies = currencies
         country_instances.append(country)

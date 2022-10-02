@@ -13,9 +13,13 @@ def validate_coordinates(coords):
         raise ValidationError(f"Expected numeric coordinates, got - {coords}")
 
     if not -90 <= coords[1] <= 90:
-        raise ValidationError(f"Latitude should be in between -90 -> 90, got - {coords[0]}")
+        raise ValidationError(
+            f"Latitude should be in between -90 -> 90, got - {coords[0]}"
+        )
     if not -180 <= coords[0] <= 180:
-        raise ValidationError(f"Longitude should be in between -180 -> 180, got - {coords[1]}")
+        raise ValidationError(
+            f"Longitude should be in between -180 -> 180, got - {coords[1]}"
+        )
 
 
 def validate_boolean_values(value):

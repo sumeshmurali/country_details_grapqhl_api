@@ -3,9 +3,7 @@ requests
 falcon
 uvicorn[standard]
 dynaconf
-haversine
 # install order should be graphene-mongo and then graphene
 graphene-mongo==0.2.14
 graphene
-
-
+pymongo==3.12.0

@@ -1,2 +1,4 @@
 pytest
 mongomock
+flake8
+flake8-print

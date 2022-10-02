@@ -13,7 +13,8 @@ def connection():
 
 
 def test_if_production():
-    assert "mongomock" in mongodb_url, f"Production URL ({mongodb_url}) is used for testing"
+    assert "mongomock" in mongodb_url, \
+        f"Production URL ({mongodb_url}) is used for testing"
 
 
 @pytest.mark.parametrize("name", ["", None, 1234, 39.2, "1234"])
@@ -21,11 +22,15 @@ def test_currency_model_name_invalid(name):
     test_currency = models.Currency()
     test_currency.short_name = "USD"
     test_currency.name = name
-    with pytest.raises(mongoengine.ValidationError) as exc:
+    with pytest.raises(mongoengine.ValidationError):
         test_currency.validate()
 
 
-@pytest.mark.parametrize("name", ["Tongan paʻanga", "United States dollar", "Indian rupee"])
+@pytest.mark.parametrize("name", [
+    "Tongan paʻanga",
+    "United States dollar",
+    "Indian rupee"
+])
 def test_currency_model_name_valid(name):
     test_currency = models.Currency()
     test_currency.short_name = "USD"
@@ -38,7 +43,7 @@ def test_currency_model_short_name_invalid(name):
     test_currency = models.Currency()
     test_currency.name = "USD"
     test_currency.short_name = name
-    with pytest.raises(mongoengine.ValidationError) as exc:
+    with pytest.raises(mongoengine.ValidationError):
         test_currency.validate()
 
 
@@ -72,8 +77,8 @@ def test_country_model_coordinates_invalid(coordinates):
     test_country.independent = False
     test_country.region = "Test Region"
     test_country.subregion = None
-    test_country.coordinates = coordinates
-    with pytest.raises(mongoengine.ValidationError) as exc:
+    test_country.location = coordinates[::-1]
+    with pytest.raises(mongoengine.ValidationError):
         test_country.validate()
 
 
@@ -86,7 +91,7 @@ def test_country_model_coordinates_invalid(coordinates):
     (0.0, 100),
     (10, 0.0)
 ])
-def test_country_model_coordinates_invalid(coordinates):
+def test_country_model_coordinates_valid(coordinates):
     test_country = models.Country()
     test_country.area = 500
     test_country.common_name = "Test Country"
@@ -95,22 +100,8 @@ def test_country_model_coordinates_invalid(coordinates):
     test_country.independent = False
     test_country.region = "Test Region"
     test_country.subregion = None
-    test_country.coordinates = coordinates
+    test_country.location = coordinates[::-1]
     test_country.validate()
-
-
-@pytest.mark.parametrize("range_, expected_result", [(20, False), (400, False), (100, False), (500, True)])
-def test_country_is_near(range_, expected_result):
-    test_country = models.Country()
-    test_country.area = 500
-    test_country.common_name = "Test Country"
-    test_country.official_name = "Test Country"
-    test_country.un_member = False
-    test_country.independent = False
-    test_country.region = "Test Region"
-    test_country.subregion = None
-    test_country.coordinates = [40.7128, 74.0060]
-    assert test_country.is_near(42.8864, 78.8784, range_) == expected_result
 
 
 @pytest.mark.parametrize("value", [None, "a", 123, Exception])
@@ -122,15 +113,15 @@ def test_country_boolean_fields_invalid(value):
     test_country.un_member = False
     test_country.region = "Test Region"
     test_country.subregion = None
-    test_country.coordinates = [40.7128, 74.0060]
+    test_country.location = [40.7128, 74.0060]
     # testing independence field
     test_country.independent = value
-    with pytest.raises(mongoengine.ValidationError) as exc:
+    with pytest.raises(mongoengine.ValidationError):
         test_country.validate()
     # testing un member field
     test_country.independent = False
     test_country.un_member = value
-    with pytest.raises(mongoengine.ValidationError) as exc:
+    with pytest.raises(mongoengine.ValidationError):
         test_country.validate()
 
 
@@ -143,7 +134,7 @@ def test_country_boolean_fields_valid(value):
     test_country.un_member = False
     test_country.region = "Test Region"
     test_country.subregion = None
-    test_country.coordinates = [40.7128, 74.0060]
+    test_country.location = [40.7128, 74.0060]
     # testing independence field
     test_country.independent = value
     test_country.validate()
@@ -162,21 +153,21 @@ def test_country_string_fields_invalid(value):
     test_country.un_member = False
     test_country.region = "Test Region"
     test_country.subregion = None
-    test_country.coordinates = [40.7128, 74.0060]
+    test_country.location = [40.7128, 74.0060]
     test_country.independent = False
     # testing common name
     test_country.common_name = value
-    with pytest.raises(mongoengine.ValidationError) as exc:
+    with pytest.raises(mongoengine.ValidationError):
         test_country.validate()
     test_country.common_name = "Test Country"
     # testing official name
     test_country.official_name = value
-    with pytest.raises(mongoengine.ValidationError) as exc:
+    with pytest.raises(mongoengine.ValidationError):
         test_country.validate()
     test_country.official_name = "Test Country"
     # testing region
     test_country.region = value
-    with pytest.raises(mongoengine.ValidationError) as exc:
+    with pytest.raises(mongoengine.ValidationError):
         test_country.validate()
 
 
@@ -189,7 +180,7 @@ def test_country_string_fields_valid(value):
     test_country.un_member = False
     test_country.region = "Test Region"
     test_country.subregion = None
-    test_country.coordinates = [40.7128, 74.0060]
+    test_country.location = [40.7128, 74.0060]
     test_country.independent = False
     # testing common name
     test_country.common_name = value
@@ -213,16 +204,16 @@ def test_country_int_fields_invalid(value):
     test_country.un_member = False
     test_country.region = "Test Region"
     test_country.subregion = None
-    test_country.coordinates = [40.7128, 74.0060]
+    test_country.location = [40.7128, 74.0060]
     test_country.independent = False
     # testing area
     test_country.area = value
-    with pytest.raises(mongoengine.ValidationError) as exc_info:
+    with pytest.raises(mongoengine.ValidationError):
         test_country.validate()
 
 
 @pytest.mark.parametrize("value", [1, 0, 1000, 20.4])
-def test_country_int_fields_invalid(value):
+def test_country_int_fields_valid(value):
     test_country = models.Country()
     # test_country.area = 500
     test_country.common_name = "Test Country"
@@ -230,7 +221,7 @@ def test_country_int_fields_invalid(value):
     test_country.un_member = False
     test_country.region = "Test Region"
     test_country.subregion = None
-    test_country.coordinates = [40.7128, 74.0060]
+    test_country.location = [40.7128, 74.0060]
     test_country.independent = False
     # testing area
     test_country.area = value

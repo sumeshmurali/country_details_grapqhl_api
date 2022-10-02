@@ -5,3 +5,4 @@ COPY . /code
 WORKDIR /code/
 RUN rm tests -rf
 RUN pip install -r requirements.txt --no-cache-dir
+RUN pip freeze

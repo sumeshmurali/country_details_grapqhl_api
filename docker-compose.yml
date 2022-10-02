@@ -4,6 +4,8 @@ services:
 
   mongodb:
     image: "mongo:6.0.2"
+    ports:
+      - "3000:27017"
 
   grapqhl_api:
     build: .
@@ -12,4 +14,5 @@ services:
     environment:
       - env_mongodb_url=mongodb://mongodb
       - env_mongodb_dbname=country_db
-    entrypoint: sh /code/start_server.sh
+    entrypoint: bash /code/start_server.sh
+#    command: "uvicorn --host 0.0.0.0 --port 80 graphql_api.app:app"
