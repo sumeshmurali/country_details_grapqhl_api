@@ -55,7 +55,6 @@ class Query(graphene.ObjectType):
 
     @staticmethod
     def resolve_countries(root, info, page=0, limit=20):
-        print("here")
         results = CountryModel.objects[page*limit:page*limit+limit]
         return results
 
