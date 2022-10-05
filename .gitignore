@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# pycharm files
+.idea
+
+# Ignore dynaconf secret files
+.secrets.*
