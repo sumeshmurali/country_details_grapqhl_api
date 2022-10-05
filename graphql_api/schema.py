@@ -8,7 +8,14 @@ from graphql import GraphQLError
 from mongoengine import ValidationError
 
 from graphql_api.models import Country as CountryModel
+from graphql_api.models import Currency as CurrencyModel
 from graphql_api.validators import validate_coordinates
+
+
+class Currency(MongoengineObjectType):
+    class Meta:
+        model = CurrencyModel
+        interfaces = (Node,)
 
 
 class Country(MongoengineObjectType):
@@ -172,4 +179,8 @@ class Mutation(graphene.ObjectType):
     update_country = UpdateCountry.Field()
 
 
-schema = graphene.Schema(query=Query, mutation=Mutation, types=[Country])
+schema = graphene.Schema(
+    query=Query,
+    mutation=Mutation,
+    types=[Country, Currency]
+)
