@@ -2,11 +2,21 @@ from mongoengine import ValidationError
 
 
 def validate_string(string: str):
+    """
+    Validates a string
+    :param string:
+    :raises ValidationError if invalid coordinate:
+    """
     if not string or not isinstance(string, str) or string.isnumeric():
         raise ValidationError(f"Expected string, Got - {string}")
 
 
 def validate_coordinates(coords):
+    """
+    Checks if a coordinate is a valid one or not.
+    :param coords:
+    :raises ValidationError if invalid coordinate:
+    """
     if not isinstance(coords[0], (float, int)):
         raise ValidationError(f"Expected numeric coordinates, got - {coords}")
     if not isinstance(coords[1], (float, int)):
@@ -23,10 +33,20 @@ def validate_coordinates(coords):
 
 
 def validate_boolean_values(value):
+    """
+    Validates boolean values
+    :param value:
+    :raises ValidationError if invalid coordinate:
+    """
     if not isinstance(value, bool):
         raise ValidationError(f"Expected True of False, got - {value}")
 
 
 def validate_numbers(value):
+    """
+    Validate numerical values
+    :param value:
+    :raises ValidationError if invalid coordinate:
+    """
     if type(value) not in {int, float}:
         raise ValidationError(f"Expected a number, got {value}")

@@ -1,4 +1,4 @@
-version: "3.4"
+version: "3.5"
 
 services:
 
@@ -8,7 +8,9 @@ services:
       - "3000:27017"
 
   grapqhl_api:
-    build: .
+    build:
+      context: .
+      target: "production"
     ports:
       - "80:80"
     environment:
@@ -16,3 +18,5 @@ services:
       - env_mongodb_dbname=country_db
     entrypoint: bash /code/start_server.sh
 #    command: "uvicorn --host 0.0.0.0 --port 80 graphql_api.app:app"
+    depends_on:
+      - "mongodb"

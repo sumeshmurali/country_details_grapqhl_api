@@ -5,13 +5,6 @@ from graphql_api.config import mongodb_url
 from graphql_api import models
 
 
-@pytest.fixture
-def connection():
-    mongoengine.connect("testdb", host=mongodb_url, alias="test_connection")
-    yield
-    mongoengine.disconnect(alias="test_connection")
-
-
 def test_if_production():
     assert "mongomock" in mongodb_url, \
         f"Production URL ({mongodb_url}) is used for testing"
@@ -20,6 +13,7 @@ def test_if_production():
 @pytest.mark.parametrize("name", ["", None, 1234, 39.2, "1234"])
 def test_currency_model_name_invalid(name):
     test_currency = models.Currency()
+    test_currency.symbol = "T"
     test_currency.short_name = "USD"
     test_currency.name = name
     with pytest.raises(mongoengine.ValidationError):
@@ -34,6 +28,7 @@ def test_currency_model_name_invalid(name):
 def test_currency_model_name_valid(name):
     test_currency = models.Currency()
     test_currency.short_name = "USD"
+    test_currency.symbol = "T"
     test_currency.name = name
     test_currency.validate()
 
@@ -42,6 +37,7 @@ def test_currency_model_name_valid(name):
 def test_currency_model_short_name_invalid(name):
     test_currency = models.Currency()
     test_currency.name = "USD"
+    test_currency.symbol = "T"
     test_currency.short_name = name
     with pytest.raises(mongoengine.ValidationError):
         test_currency.validate()
@@ -50,9 +46,29 @@ def test_currency_model_short_name_invalid(name):
 @pytest.mark.parametrize("name", ["USD", "INR", "TOP"])
 def test_currency_model_short_name_valid(name):
     test_currency = models.Currency()
+    test_currency.symbol = "T"
     test_currency.name = "USD"
     test_currency.short_name = name
     test_currency.validate()
+
+
+@pytest.mark.parametrize("name", ["kr", "ع.د", "€"])
+def test_currency_model_symbol_valid(name):
+    test_currency = models.Currency()
+    test_currency.symbol = name
+    test_currency.name = "USD"
+    test_currency.short_name = "USD"
+    test_currency.validate()
+
+
+@pytest.mark.parametrize("name", ["abcbsa", 123, 12.3])
+def test_currency_model_symbol_invalid(name):
+    test_currency = models.Currency()
+    test_currency.symbol = name
+    test_currency.name = "USD"
+    test_currency.short_name = "USD"
+    with pytest.raises(mongoengine.ValidationError):
+        test_currency.validate()
 
 
 @pytest.mark.parametrize("coordinates", [
@@ -212,7 +228,7 @@ def test_country_int_fields_invalid(value):
         test_country.validate()
 
 
-@pytest.mark.parametrize("value", [1, 0, 1000, 20.4])
+@pytest.mark.parametrize("value", [1, 5, 1000, 20.4])
 def test_country_int_fields_valid(value):
     test_country = models.Country()
     # test_country.area = 500

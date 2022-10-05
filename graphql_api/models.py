@@ -9,24 +9,36 @@ mongoengine.connect(mongodb_db_name, host=mongodb_url)
 class Currency(mongoengine.EmbeddedDocument):
     name = mongoengine.StringField(
         required=True,
-        validation=validators.validate_string
+        validation=validators.validate_string,
+        min_length=1,
+        max_length=100,
     )
-    symbol = mongoengine.StringField()
+    symbol = mongoengine.StringField(
+        required=True,
+        validation=validators.validate_string,
+        min_length=1,
+        max_length=5
+    )
     short_name = mongoengine.StringField(
         required=True,
-        validation=validators.validate_string
+        validation=validators.validate_string,
+        min_length=1,
+        max_length=5,
     )
 
 
 class Country(mongoengine.Document):
-    # TODO add length validation - necessary to not input too large fields
     common_name = mongoengine.StringField(
         required=True,
-        validation=validators.validate_string
+        validation=validators.validate_string,
+        min_length=1,
+        max_length=100,
     )
     official_name = mongoengine.StringField(
         required=True,
-        validation=validators.validate_string
+        validation=validators.validate_string,
+        min_length=1,
+        max_length=100
     )
     independent = mongoengine.BooleanField(
         required=True,
@@ -36,9 +48,12 @@ class Country(mongoengine.Document):
         required=True,
         validation=validators.validate_boolean_values
     )
-    # TODO add validators for languages
     languages = mongoengine.ListField(
-        mongoengine.StringField(validation=validators.validate_string)
+        mongoengine.StringField(
+            validation=validators.validate_string,
+            min_length=1,
+            max_length=100
+        )
     )
     # longitude, latitude format
     location = mongoengine.PointField(
@@ -47,14 +62,21 @@ class Country(mongoengine.Document):
     )
     area = mongoengine.IntField(
         required=True,
-        validation=validators.validate_numbers
+        validation=validators.validate_numbers,
+        # a country with area less than 1 is not logical
+        min_value=1
     )
     region = mongoengine.StringField(
         required=True,
-        validation=validators.validate_string
+        validation=validators.validate_string,
+        min_length=1,
+        max_length=100,
+
     )
     subregion = mongoengine.StringField(
-        validation=validators.validate_string
+        validation=validators.validate_string,
+        min_length=1,
+        max_length=100,
     )
     currencies = mongoengine.ListField(
         mongoengine.EmbeddedDocumentField(Currency)
