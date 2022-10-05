@@ -17,6 +17,7 @@ def fetch_from_api() -> list:
 def populate_database():
     if Country.objects.first() is not None:
         # if the database is already populated no need to populate it again
+        logging.info("Database is already populated. Skipping..")
         return
     country_raw_data = fetch_from_api()
     logging.info("Collected data from API successfully")
