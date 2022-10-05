@@ -27,7 +27,7 @@ Country is the main object type available in the API. The Country object type su
 
 ```graphql
 country {
-	id
+    id
     commonName
     officialName
     independent
@@ -73,7 +73,7 @@ query listCountries($page: Int = 0, $limit: Int = 20){
 ```
 Variables
 ```json
-variables = {
+{
   "page": 0,
   "limit": 20
 }
